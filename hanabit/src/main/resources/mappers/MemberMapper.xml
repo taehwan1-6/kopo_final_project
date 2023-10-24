@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.hanabit.member.mapper.MemberMapper">
+
+    <!-- v2 -->
+    <update id="updateIsLinkedAccount">
+        update HB_MEMBERS
+        set IS_LINKED_ACCOUNT = #{isLinkedAccount}
+        where EMAIL = #{email}
+    </update>
+
+    <update id="updatePersonalNum">
+        update HB_MEMBERS
+        set PERSONAL_NUM = #{personalNum}
+        where EMAIL = #{email}
+    </update>
+
+    <!-- insert -->
+    <insert id="join" parameterType="kr.ac.kopo.hanabit.member.dto.MemberJoinDto">
+        insert into hb_members(email, password, name, interest)
+        values (#{email}, #{password}, #{name}, #{interest})
+    </insert>
+
+    <!-- 계정 삭제 -->
+    <delete id="delete" parameterType="String">
+        delete
+        from HB_MEMBERS
+        where EMAIL = #{email}
+    </delete>
+
+
+    <!-- 구 -->
+
+    <insert id="join2" parameterType="kr.ac.kopo.hanabit.member.dto.MemberJoinDto">
+        insert into hb_members(email, password, name, personal_num)
+        values (#{email}, #{password}, #{name}, #{personalNum})
+    </insert>
+
+    <select id="login" parameterType="kr.ac.kopo.hanabit.member.dto.MemberLoginDto"
+            resultType="kr.ac.kopo.hanabit.member.dto.MemberDto">
+        select *
+        from hb_members
+        where email = #{email}
+          and password = #{password}
+    </select>
+
+</mapper>

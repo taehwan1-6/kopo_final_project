@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.hanabankapiserver.transaction.v2.mapper.TransactionMapper">
+
+    <select id="selectAllTransaction"
+            resultType="kr.ac.kopo.hanabankapiserver.transaction.v2.dto.TransactionResponseDto">
+        SELECT
+            A.ACCOUNT_NUM AS accountNum,
+
+            A.TYPE AS accountType,
+            A.BANK_CODE AS bankCode,
+
+            T.TRANSACTION_DATE AS transactionDate,
+            T.TYPE AS transactionType,
+
+            T.TRANSACTION_AMOUNT AS transactionAmount,
+            T.TRANSACTION_BALANCE AS transactionBalance,
+
+            T.TRANSACTION_NAME AS transactionName,
+            T.TARGET_BANK_CODE AS targetBankCode,
+            T.TARGET_ACCOUNT_NUM AS targetAccountNum
+        FROM
+            BANK_MEMBERS M
+                JOIN
+            BANK_ACCOUNTS A ON M.EMAIL = A.MEMBER_EMAIL
+                JOIN
+            BANK_TRANSACTIONS T ON A.ACCOUNT_NUM = T.ACCOUNT_NUM
+        where A.TYPE = #{accountType}
+        and m.PERSONAL_NUM = #{personalNum}
+        and a.account_num = #{accountNum}
+        order by TRANSACTION_DATE desc
+
+    </select>
+
+    <!-- 계좌 이체 시, 입금 된 계좌의 거래내역 insert -->
+    <insert id="insertAccountNum" parameterType="kr.ac.kopo.hanabankapiserver.transaction.v2.dto.TransactionRequestDto">
+        INSERT INTO BANK_TRANSACTIONS
+        (account_num, type, transaction_amount, TRANSACTION_BALANCE, transaction_name, target_bank_code, target_account_num)
+        VALUES
+            (#{accountNum}, '출금', #{transactionAmount}, #{transactionBalance}, #{transactionName}, #{bankCode}, #{targetAccountNum})
+
+    </insert>
+    <!-- 계좌 이체 시, 출금 된 계좌의 거래내역 insert -->
+    <insert id="insertTargetAccountNum" parameterType="kr.ac.kopo.hanabankapiserver.transaction.v2.dto.TransactionRequestDto">
+        INSERT INTO BANK_TRANSACTIONS
+        (account_num, type, transaction_amount, TRANSACTION_BALANCE, transaction_name, target_bank_code, target_account_num)
+        VALUES
+            (#{targetAccountNum}, '입금', #{transactionAmount}, #{transactionBalance}, #{transactionName}, #{bankCode}, #{accountNum})
+
+    </insert>
+
+    <!-- 출금 처리는 비슷한 방식으로 추가... -->
+    <update id="decreaseBalanceForAccountNum" parameterType="kr.ac.kopo.hanabankapiserver.transaction.v2.dto.TransactionRequestDto">
+        update BANK_ACCOUNTS
+        set BALANCE = BALANCE - #{transactionAmount}
+        where ACCOUNT_NUM = #{accountNum}
+    </update>
+    <update id="increaseBalanceForTargetAccountNum" parameterType="kr.ac.kopo.hanabankapiserver.transaction.v2.dto.TransactionRequestDto">
+        update BANK_ACCOUNTS
+        set BALANCE = BALANCE + #{transactionAmount}
+        where ACCOUNT_NUM = #{targetAccountNum}
+    </update>
+
+
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.hanabankapiserver.member.mapper.MemberMapper">
+
+    <select id="selectByPersonalNum" parameterType="string" resultType="kr.ac.kopo.hanabankapiserver.member.dto.MemberDto">
+        select *
+        from bank_members
+        where PERSONAL_NUM = #{personalNum, jdbcType=VARCHAR}
+    </select>
+
+    <insert id="joinAtHanabit" parameterType="kr.ac.kopo.hanabankapiserver.member.dto.MemberDto">
+        INSERT INTO bank_members
+        (
+            EMAIL,
+            PASSWORD,
+            NAME,
+            PERSONAL_NUM,
+            CREATED_AT
+        )
+        VALUES
+            (#{email},
+             #{password},
+             #{name},
+             #{personalNum},
+             #{createdAt})
+    </insert>
+
+</mapper>

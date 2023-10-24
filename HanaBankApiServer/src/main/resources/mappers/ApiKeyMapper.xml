@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.hanabankapiserver.apikey.mapper.ApiKeyMapper">
+
+    <select id="selectCompanyUserByApiKey" parameterType="String"
+            resultType="String">
+        select COMPANY_USER
+        from BANK_APIKEYS
+        where API_KEY = #{apiKey}
+    </select>
+
+    <select id="select" parameterType="String"
+            resultType="String">
+        select COMPANY_USER
+        from BANK_APIKEYS
+        where API_KEY = #{apiKey}
+    </select>
+
+
+</mapper>

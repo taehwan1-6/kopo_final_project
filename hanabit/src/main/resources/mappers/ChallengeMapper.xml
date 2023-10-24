@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.hanabit.challenge.mapper.ChallengeMapper">
+
+
+    <select id="countChallengeLogsByDateRange" resultType="int">
+        SELECT COUNT(*)
+        FROM hb_challenge_logs
+        WHERE challenge_log_date BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+
+    <select id="selectChallengeLogPoint" parameterType="String" resultType="map">
+        select ch.CHALLENGE_LOG_ID, to_char(ch.CHALLENGE_LOG_DATE,'yyyy-mm-dd') as CHALLENGE_LOG_DATE,
+               ch.MEMBER_EMAIL, ch.CHALLENGE_POINT, c.CHALLENGE_NAME
+        from HB_CHALLENGE_LOGS ch, HB_CHALLENGES c
+        where ch.MEMBER_EMAIL = #{memeberEmail} and c.challenge_code = ch.challenge_code
+        order by ch.CHALLENGE_LOG_DATE desc
+    </select>
+    <select id="sumPointByMemberEmail" parameterType="String" resultType="int">
+        select sum(CHALLENGE_POINT)
+        from HB_CHALLENGE_LOGS
+        where MEMBER_EMAIL = #{memberEmail}
+    </select>
+
+    <select id="selectAllChallengeLogByMemberEmail" parameterType="String" resultType="kr.ac.kopo.hanabit.challenge.dto.ChallengeLogDto">
+        select *
+        from HB_CHALLENGE_LOGS
+        where MEMBER_EMAIL = #{memberEmail}
+    </select>
+
+
+    <select id="selectChallengeLogMap" parameterType="String" resultType="map">
+        select to_char(cl.CHALLENGE_LOG_DATE,'yyyy-mm-dd') as CHALLENGE_LOG_DATE,
+               c.CHALLENGE_NAME,
+               c.CHALLENGE_REWARD_AMOUNT
+        from HB_CHALLENGE_LOGS cl, HB_CHALLENGES c
+        where c.CHALLENGE_CODE = cl.CHALLENGE_CODE
+          and cl.member_Email = #{memberEmail}
+    </select>
+
+    <!-- selectAll -->
+    <select id="selectAll" resultType="kr.ac.kopo.hanabit.challenge.dto.ChallengeDto">
+        select *
+        from HB_CHALLENGES
+        order by CHALLENGE_CREATED_AT desc
+    </select>
+
+    <select id="selectAllByCategory" resultType="kr.ac.kopo.hanabit.challenge.dto.ChallengeDto">
+        select *
+        from HB_CHALLENGES
+        where CHALLENGE_CATEGORY = #{challengeCategory}
+        order by CHALLENGE_CREATED_AT desc
+    </select>
+
+    <!-- select -->
+    <select id="selectByChallengeCode" parameterType="String" resultType="kr.ac.kopo.hanabit.challenge.dto.ChallengeDto">
+        select *
+        from HB_CHALLENGES
+        where CHALLENGE_CODE = #{challengeCode}
+        order by CHALLENGE_CREATED_AT desc
+    </select>
+
+
+
+    <!-- insert -->
+    <insert id="insertChallenge" parameterType="kr.ac.kopo.hanabit.challenge.dto.ChallengeDto">
+        INSERT INTO hb_challenges
+            (challenge_code,
+             challenge_Name,
+             challenge_Reward_Amount,
+
+             challenge_info_summary,
+             challenge_Info_content,
+             challenge_auth_content,
+
+             challenge_Img_Path,
+             challenge_title_img,
+             challenge_auth_img,
+
+             challenge_Category,
+             challenge_Status)
+        VALUES
+            ('c'||(seq_challenge_no.nextval),
+             #{challengeName},
+             #{challengeRewardAmount},
+
+             #{challengeInfoSummary},
+             #{challengeInfoContent, jdbcType=CLOB},
+             #{challengeAuthContent},
+
+             #{challengeImgPath},
+             #{challengeTitleImg, jdbcType=VARCHAR},
+             #{challengeAuthImg, jdbcType=VARCHAR},
+
+             #{challengeCategory, jdbcType=VARCHAR},
+             #{challengeStatus, jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertChallengeLog" parameterType="kr.ac.kopo.hanabit.challenge.dto.ChallengeLogDto">
+        insert into hb_challenge_logs(challenge_code, challenge_point, member_email, challenge_log_date)
+        values (#{challengeCode}, #{challengePoint}, #{memberEmail}, #{challengeLogDate, jdbcType=DATE})
+    </insert>
+
+
+</mapper>

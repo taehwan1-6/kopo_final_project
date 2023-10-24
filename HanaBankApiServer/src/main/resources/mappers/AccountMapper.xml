@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.hanabankapiserver.account.v3.mapper.AccountMapper">
+
+    <!-- selectAll -->
+    <select id="selectAllByPersonalNum" parameterType="String"
+            resultType="kr.ac.kopo.hanabankapiserver.account.v3.dto.AccountDto">
+        select *
+        from BANK_ACCOUNTS a, BANK_MEMBERS b
+        where a.MEMBER_EMAIL = b.EMAIL
+          and b.PERSONAL_NUM = #{personalNum}
+    </select>
+
+    <select id="selectAllByPersonalNumAndType"
+            resultType="kr.ac.kopo.hanabankapiserver.account.v3.dto.AccountDto">
+        select *
+        from BANK_ACCOUNTS a, BANK_MEMBERS b
+        where a.MEMBER_EMAIL = b.EMAIL
+          and b.PERSONAL_NUM = #{personalNum}
+          and a.TYPE = #{type}
+    </select>
+
+    <!-- select -->
+    <select id="selectByAccountNum"
+            resultType="kr.ac.kopo.hanabankapiserver.account.v3.dto.AccountDto">
+        select *
+        from BANK_ACCOUNTS
+        WHERE ACCOUNT_NUM = #{accountNum}
+    </select>
+
+    <!-- update -->
+    <update id="updateBalance">
+        UPDATE BANK_ACCOUNTS
+        SET BALANCE = #{balance}
+        WHERE  ACCOUNT_NUM = #{accountNum}
+    </update>
+
+    <!-- insert -->
+    <insert id="insert" parameterType="kr.ac.kopo.hanabankapiserver.account.v3.dto.AccountDto">
+        INSERT INTO BANK_ACCOUNTS
+        (
+            ACCOUNT_NUM,
+            PASSWORD,
+            PRODUCT_NAME,
+            BALANCE,
+            TYPE,
+            STATUS,
+            BANK_CODE,
+            CREATED_AT,
+            MEMBER_EMAIL
+        )
+        VALUES
+            (
+                #{accountNum},
+                #{password},
+                #{productName, jdbcType=VARCHAR},
+                #{balance},
+                #{type},
+                #{status},
+                #{bankCode},
+                #{createdAt},
+                #{memberEmail}
+            )
+    </insert>
+
+    <insert id="insertTransactionLog" parameterType="kr.ac.kopo.hanabankapiserver.account.v3.dto.AccountTransactionLogDto">
+        INSERT INTO BANK_TRANSACTIONS
+        (
+            TRANSACTION_DATE,
+            ACCOUNT_NUM,
+            TYPE,
+            TRANSACTION_AMOUNT,
+            TRANSACTION_BALANCE,
+            TRANSACTION_NAME,
+            TARGET_BANK_CODE,
+            TARGET_ACCOUNT_NUM
+        )
+        VALUES
+            (
+                #{transactionDate},
+                #{accountNum},
+                #{type},
+                #{transactionAmount},
+                #{transactionBalance},
+                #{transactionName},
+                #{targetBankCode},
+                #{targetAccountNum}
+            )
+    </insert>
+
+
+
+</mapper>
